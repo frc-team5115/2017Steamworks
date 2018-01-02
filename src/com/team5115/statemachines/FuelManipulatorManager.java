@@ -1,8 +1,10 @@
 package com.team5115.statemachines;
 
 import com.team5115.robot.InputManager;
-import com.team5115.robot.Robot;
+import com.team5115.robot.Roobit;
 import com.team5115.Constants;
+
+import edu.wpi.first.wpilibj.Timer;
 
 public class FuelManipulatorManager extends StateMachineBase {
 	
@@ -15,7 +17,11 @@ public class FuelManipulatorManager extends StateMachineBase {
 	public static final int STOP = 0;
 	public static final int INTAKE = 1;
 	public static final int AIMING = 2;
-	public static final int SHOOT = 3;
+	public static final int SPINUP = 3;
+	public static final int SHOOT = 4;
+	public static final int CLIMB = 5;
+	
+	boolean canStopShooting = false;
 	
 	AgitatorManager am;
 	FlywheelManager fm;
@@ -31,9 +37,13 @@ public class FuelManipulatorManager extends StateMachineBase {
 	}
 
 	public void update() {
+		if (InputManager.cancel())
+			setState(INTAKE);
+		
 		switch (state) {
 		case STOP:
 			// stop
+			System.out.println("FMM stop");
 			im.setState(IntakeManager.STOP);
 			am.setState(AgitatorManager.STOP);
 			fm.setState(FlywheelManager.STOP);
@@ -58,21 +68,49 @@ public class FuelManipulatorManager extends StateMachineBase {
 		    	setState(AIMING);
 		    }
 		    
+		    if (InputManager.shoot()) {
+		    	fm.setState(FlywheelManager.SHOOT);
+		    	setState(SPINUP);
+		    }
+		    
+		    //System.out.println(InputManager.shoot());
+		    
 			break;
 			
 		case AIMING:
 			// aim
 			aim.update();
+			
+			System.out.println("AIMING");
 		    
 		    im.update();
 		    am.update();
 		    fm.update();
-			if(InputManager.shoot() && aim.aimed) {
+			if(InputManager.shoot()) {
 				aim.setState(AimFuel.STOP);
-		    	setState(SHOOT);
+				fm.setState(FlywheelManager.SHOOT);
+				Roobit.drivetrain.inuse = false;
+				setState(SPINUP);
 		    }
+			if (aim.aimed) {
+				aim.setState(AimFuel.STOP);
+				fm.setState(FlywheelManager.SHOOT);
+				Roobit.drivetrain.inuse = false;
+				setState(SPINUP);
+			}
 			break;
 			
+		case SPINUP:
+			im.update();
+		    am.update();
+		    fm.update();
+		    
+		    if (fm.atSpeed()){
+		    	am.setState(AgitatorManager.FEED);
+		    	setState(SHOOT);
+		    }
+		    
+		    break;
 		case SHOOT:
 			// shoot
 			im.setState(IntakeManager.INTAKE);
@@ -83,11 +121,25 @@ public class FuelManipulatorManager extends StateMachineBase {
 			am.update();
 			fm.update();
 			
-			if(InputManager.cancel()) {
+			if (!InputManager.shoot())
+				canStopShooting = true;
+			
+			if(InputManager.cancel() || InputManager.shoot() && canStopShooting) {
 				setState(INTAKE);
 			}
 			
 			break;
+
+		case CLIMB:
+			im.setState(IntakeManager.STOP);
+			am.setState(AgitatorManager.STARVE);
+			fm.setState(FlywheelManager.STARVE);
+			
+			im.update();
+			am.update();
+			fm.update();
+			break;
+		
 		}
 	}
 }

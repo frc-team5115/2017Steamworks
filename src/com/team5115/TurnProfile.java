@@ -29,8 +29,11 @@ public class TurnProfile {
 		angle = Math.toRadians(a);
 		
 		t1 = maxVelocity / maxAcceleration;
-		t2 = ((radius * angle) - (t1 * maxVelocity)) / maxVelocity;
+		t2 = ((radius * Math.abs(angle)) - (t1 * maxVelocity / 2)) / maxVelocity;
 		time = (2 * t1) + t2;
+		
+		maxVelocity *= Math.signum(angle);
+		maxAcceleration *= Math.signum(angle);
 	}
 	
 	public double getVelocity(double t) {

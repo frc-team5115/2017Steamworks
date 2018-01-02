@@ -1,7 +1,7 @@
 package com.team5115.statemachines;
 
 import com.team5115.robot.InputManager;
-import com.team5115.robot.Robot;
+import com.team5115.robot.Roobit;
 import com.team5115.Constants;
 
 public class IntakeManager extends StateMachineBase {
@@ -12,14 +12,18 @@ public class IntakeManager extends StateMachineBase {
 	
 	public static final int STOP = 0;
 	public static final int INTAKE = 1;
+	public static final int CLIMB = 2;
 
 	public void update() {
 		switch (state) {
-		case 0:
-			Robot.intake.stop();
+		case STOP:
+			Roobit.intake.stop();
 			break;
-		case 1:
-			Robot.intake.intake();
+		case INTAKE:
+			Roobit.intake.intake();
+			break;
+		case CLIMB:
+			Roobit.intake.back();
 			break;
 		}
 	}

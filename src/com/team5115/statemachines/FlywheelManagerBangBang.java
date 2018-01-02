@@ -7,7 +7,7 @@ import com.team5115.PID;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class FlywheelManager extends StateMachineBase {
+public class FlywheelManagerBangBang extends StateMachineBase {
 	
 	/**
 	 * This state machine controls the flywheel shooter, which shoots the ball
@@ -18,13 +18,12 @@ public class FlywheelManager extends StateMachineBase {
 	public static final int STARVE = 2;
 	
 	PID pidController;
-	double feedforward = 0.51;
 	
 	double speed;
 	
-	double kp = 0.0025, ki = 0, kd = 0;
+	double kp = 0.03, ki = 0.000, kd = 0.0002;
 	
-	public FlywheelManager() {
+	public FlywheelManagerBangBang() {
 		pidController = new PID();
 	}
 
@@ -35,9 +34,13 @@ public class FlywheelManager extends StateMachineBase {
 			break;
 			
 		case SHOOT:
-			double feedback = pidController.getPID(Constants.OPTIMUM_FLYWHEEL_RPM, Roobit.flywheel.getFlywheelRPM(), kp, ki, kd);
-			
-			Roobit.flywheel.spinUp(feedforward + feedback);
+			//double speed = pidController.getPID(Constants.OPTIMUM_FLYWHEEL_RPM, Robot.flywheel.getFlywheelRPM(), kp, ki, kd);
+			if (Roobit.flywheel.getFlywheelRPM() > Constants.OPTIMUM_FLYWHEEL_RPM) {
+				speed = 0;
+			} else {
+				speed = 1;
+			}
+			Roobit.flywheel.spinUp(speed);
 			
 			System.out.println("Flywheel Speed " + speed);
 			System.out.println("Flywheel RPM " + Roobit.flywheel.getFlywheelRPM());

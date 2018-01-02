@@ -1,7 +1,7 @@
 package com.team5115.statemachines;
 
 import com.team5115.robot.InputManager;
-import com.team5115.robot.Robot;
+import com.team5115.robot.Roobit;
 
 public class SwitchDirection extends StateMachineBase {
 	
@@ -11,9 +11,15 @@ public class SwitchDirection extends StateMachineBase {
 	
 	public void update() {
 		switch(state) {
-		default:
+		case 0:
 			if (InputManager.switchDirection()) {
-				Robot.drivetrain.direction *= -1;
+				Roobit.drivetrain.direction *= -1;
+				setState(1);
+			}
+			break;
+		case 1:
+			if (!InputManager.switchDirection()) {
+				setState(0);
 			}
 		}
 	}

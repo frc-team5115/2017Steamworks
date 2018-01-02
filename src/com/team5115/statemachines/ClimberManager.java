@@ -1,7 +1,7 @@
 package com.team5115.statemachines;
 
 import com.team5115.robot.InputManager;
-import com.team5115.robot.Robot;
+import com.team5115.robot.Roobit;
 
 public class ClimberManager extends StateMachineBase {
 	
@@ -15,15 +15,16 @@ public class ClimberManager extends StateMachineBase {
 	public void update() {
 		switch(state) {
 		case STOP:
-			Robot.climber.stopClimb();
+			Roobit.climber.stopClimb();
 			if(InputManager.climb()) {
 				setState(CLIMB);
 			}
 			break;
 			
 		case CLIMB:
-			Robot.climber.climbUp();
-			if (InputManager.cancel()) {
+			Roobit.climber.climbUp();
+			Roobit.fuel.setState(FuelManipulatorManager.CLIMB);
+			if (InputManager.cancel() || !InputManager.climb()) {
 				setState(STOP);
 			}
 			break;

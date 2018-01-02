@@ -10,14 +10,14 @@ public class InputManager {
  * InputManager is the place where inputs from the joystick go to die
  * Here, they are converted into methods for the rest of the code
  * In order to reference a joystick input, you must reference the InputManager class
- * If don't really understand Getters and Setters you should go to Stack overflow or try (through trial and error) making them in a new project to see how they work 
+ * If you don't really understand Getters and Setters you should go to Stack overflow or try (through trial and error) making them in a new project to see how they work 
  */
 	
 	static Joystick joy = new Joystick(0);
 	
 	//The following methods deal with the basic driving functionalities
 	public static double getX() {
-		return -treatAxis(joy.getRawAxis(Constants.AXIS_X));
+		return treatAxis(joy.getRawAxis(Constants.AXIS_X));
 	}
 	
 	public static double getY() {
@@ -25,14 +25,8 @@ public class InputManager {
 	}
 	
 	//These methods are controlled by the nub on the top of the joystick
-	public static double getCamX() {
-		if (joy.getPOV() == -1) { return 0; }
-		return Math.sin(Math.toRadians(joy.getPOV()));
-	}
-	
-	public static double getCamY() {
-		if (joy.getPOV() == -1) { return 0; }
-		return -1 * Math.cos(Math.toRadians(joy.getPOV()));
+	public static double getHat() {
+		return joy.getPOV();
 	}
 	
 	public static double getThrottle() {
@@ -44,13 +38,14 @@ public class InputManager {
 		return joy.getRawButton(Constants.BUTTON_QUICK_TURN);
 	}
 	
-	// Handles squaring and deadband
+	// Handles expo and deadband
 	public static double treatAxis(double val) {
-		val = Math.signum(val) * Math.pow(val, Constants.JOYSTICK_EXPO);
-
-		if (Math.abs(val) < Constants.JOYSTICK_DEADBAND)
+		if (Math.abs(val) < Constants.JOYSTICK_DEADBAND) {
 			val = 0;
-
+		}
+		double sign = (1 * Math.signum(val));
+		val = Math.pow(Math.abs(val), 2 * getThrottle() + 1);
+		val *= sign;
 		return val;
 	}
 	
@@ -67,6 +62,9 @@ public class InputManager {
 	public static boolean switchDirection() {
 		return joy.getRawButton(Constants.BUTTON_SWITCH_DIRECTION);
 	}
+	public static boolean turn180() {
+		return joy.getRawButton(Constants.BUTTON_TURN_AROUND);
+	}
 		
 	public static boolean aimFuel() {
 		return joy.getRawButton(Constants.BUTTON_AIM_FUEL);
@@ -82,10 +80,14 @@ public class InputManager {
 	
 	public static boolean climb() {
 		return joy.getRawButton(Constants.BUTTON_CLIMB);
+		
 	}
 
 	public static boolean cancel() {
 		return joy.getRawButton(Constants.BUTTON_CANCEL);
+	}
+	public static boolean testThing(){
+		return joy.getRawButton(Constants.TEST_THING_BUTTON); 
 	}
 
 }

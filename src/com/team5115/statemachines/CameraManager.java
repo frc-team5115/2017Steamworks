@@ -1,7 +1,8 @@
 package com.team5115.statemachines;
 
+import com.team5115.Constants;
 import com.team5115.robot.InputManager;
-import com.team5115.robot.Robot;
+import com.team5115.robot.Roobit;
 import com.team5115.systems.Camera;
 
 public class CameraManager extends StateMachineBase {
@@ -16,29 +17,13 @@ public class CameraManager extends StateMachineBase {
 	public static final int INTAKE = 2;
 	
 	public void update() {
-		switch(state) {
-		case BOILER:
-			Robot.camera.setAngle(Camera.BOILER);
-			if (InputManager.getCamX() == -1) {
-				setState(CLIMBER);
-			} else if (InputManager.getCamX() == 1) {
-				setState(INTAKE);
-			}
-		case CLIMBER:
-			Robot.camera.setAngle(Camera.CLIMBER);
-			if (InputManager.getCamY() == -1) {
-				setState(BOILER);
-			} else if (InputManager.getCamX() == 1) {
-				setState(INTAKE);
-			}
-		case INTAKE:
-			Robot.camera.setAngle(Camera.INTAKE);
-			if (InputManager.getCamY() == -1) {
-				setState(BOILER);
-			} else if (InputManager.getCamX() == -1) {
-				setState(CLIMBER);
-			}
-		}
+		if (InputManager.getHat() == 0) {
+			Roobit.camera.setAngle(Constants.BOILER_ANGLE);
+		} else if (InputManager.getHat() == 270)
+			Roobit.camera.setAngle(Constants.CLIMBER_ANGLE);
+		else if (InputManager.getHat() == 180)
+			Roobit.camera.setAngle(Constants.INTAKE_ANGLE);
+	
 	}
 	
 }

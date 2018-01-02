@@ -1,5 +1,8 @@
 package com.team5115.statemachines;
 
+import com.team5115.Constants;
+import com.team5115.robot.Roobit;
+
 public class Auto extends StateMachineBase {
 	
 	/**
@@ -21,7 +24,8 @@ public class Auto extends StateMachineBase {
 	AutoGearCenter agc;
 	AutoGearRightRed agrr;
 	AutoGearRightBlue agrb;
-	AutoFuel af;
+	AutoFuelBlue afb;
+	AutoFuelRed afr;
 	
 	int team;
 	int action;
@@ -37,8 +41,8 @@ public class Auto extends StateMachineBase {
 		agc = new AutoGearCenter();
 		agrr = new AutoGearRightRed();
 		agrb = new AutoGearRightBlue();
-		af = new AutoFuel();
-		
+		afb = new AutoFuelBlue();
+		afr = new AutoFuelRed();
 	}
 	
 	public void update() {
@@ -50,12 +54,14 @@ public class Auto extends StateMachineBase {
 			agc.setState(AutoGearCenter.INIT);
 			agrr.setState(AutoGearRightRed.INIT);
 			agrb.setState(AutoGearRightBlue.INIT);
-			af.setState(AutoFuel.INIT);
+			afb.setState(AutoFuelBlue.INIT);
+			afr.setState(AutoFuelRed.INIT);
 			
 			if(action == 2) {
 				state = FUEL;
 			}
 			else if(action == 1) {
+				Roobit.drivetrain.direction = Constants.DIR_GEAR;
 				if(position == GEAR_LEFT) {
 					state = GEAR_LEFT;
 				}
@@ -72,7 +78,11 @@ public class Auto extends StateMachineBase {
 			
 		//The following cases simply run the different routines for the autonomous phase
 		case FUEL:
-			af.update();
+			if (team == 1) {
+				afr.update();
+			} else {
+				afb.update();
+			}
 			break;
 		
 		case GEAR_LEFT:
@@ -84,6 +94,7 @@ public class Auto extends StateMachineBase {
 			break;
 			
 		case GEAR_CENTER:
+			System.out.println("gear center");
 			agc.update();
 			break;
 			

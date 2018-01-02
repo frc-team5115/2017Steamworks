@@ -22,8 +22,11 @@ public class ForwardProfile {
 		distance = dist;
 		
 		t1 = maxVelocity / maxAcceleration;
-		t2 = (distance - (t1 * maxVelocity)) / maxVelocity;
+		t2 = (Math.abs(distance) - (t1 * maxVelocity)) / maxVelocity;
 		time = (2 * t1) + t2;
+		
+		maxVelocity *= Math.signum(distance);
+		maxAcceleration *= Math.signum(distance);
 	}
 	
 	public double getVelocity(double t) {

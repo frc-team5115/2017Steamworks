@@ -34,13 +34,13 @@ public class DriveTrain {
 		frontright = new CANTalon(Constants.FRONT_RIGHT_MOTOR_ID);
 		backleft = new CANTalon(Constants.BACK_LEFT_MOTOR_ID);
 		backright = new CANTalon(Constants.BACK_RIGHT_MOTOR_ID);
-		backleft.changeControlMode(CANTalon.TalonControlMode.Follower);
-		backright.changeControlMode(CANTalon.TalonControlMode.Follower);
+		frontleft.changeControlMode(CANTalon.TalonControlMode.Follower);
+		frontright.changeControlMode(CANTalon.TalonControlMode.Follower);
 //		navx = new AHRS(SerialPort.Port.kMXP);
-		frontleft.setInverted(true);
-		backleft.setInverted(true);
-		backleft.set(frontleft.getDeviceID());
-		backright.set(frontright.getDeviceID());
+		frontright.setInverted(true);
+		backright.setInverted(true);
+		frontleft.set(backleft.getDeviceID());
+		frontright.set(backright.getDeviceID());
 		direction = 1;
 	}
 	
@@ -58,20 +58,20 @@ public class DriveTrain {
 			rightSpeed = 1;
 		}
 		
-		frontleft.set(-direction * leftSpeed);
-		frontright.set(-direction * rightSpeed);
+		backleft.set(leftSpeed * throttle);
+		backright.set(rightSpeed * throttle);
 
 	}
 	
 	// These methods are called getters, as they get values from the drivetrain
 	public double leftDist() {
-		double leftDist = backleft.getPosition() * direction;
-		return leftDist / 1440 * 7.5 * Math.PI / 12;
+		double leftDist = -direction * backleft.getPosition();
+		return leftDist / 1440 * 4 * Math.PI / 12;
 	}
 	    
 	public double rightDist() {
-		double rightDist = -backright.getPosition() * direction;
-		return rightDist / 1440 * 7.5 * Math.PI / 12;
+		double rightDist = direction * backright.getPosition();
+		return rightDist / 1440 * 4 * Math.PI / 12;
 	}
 	    
 	public double distanceTraveled() {
@@ -80,12 +80,12 @@ public class DriveTrain {
 	    
 	public double leftSpeed() {
 		double leftspeed = backleft.getSpeed();
-	    return ((leftspeed * 7.5 * Math.PI * 10) / (1440 * 12));
+	    return ((leftspeed * 4 * Math.PI * 10) / (1440 * 12));
 	}
 	 
 	public double rightSpeed() {
-		double rightspeed = -backright.getSpeed();
-	    return ((rightspeed * 7.5 * Math.PI * 10) / (1440 * 12));
+		double rightspeed = backright.getSpeed();
+	    return ((rightspeed * 4 * Math.PI * 10) / (1440 * 12));
 	}
 	 
 	public double averageSpeed() {
